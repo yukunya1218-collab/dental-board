@@ -209,46 +209,84 @@
         </div>
         <div>
           <h2 class="text-xl font-bold text-gray-800">保持できるようにしたデータ</h2>
-          <p class="text-sm text-gray-500">「問題」と「コメント」を別々の表に分け、1つの問題に何件でもコメントをつけられるようにした</p>
+          <p class="text-sm text-gray-500">1つの「問題」に対して、コメントが何件でもつながる形で保存している</p>
         </div>
       </div>
 
-      <div class="flex flex-col md:flex-row items-stretch gap-4">
-        <div class="flex-1 bg-sky-50 border border-sky-200 rounded-xl p-4">
-          <div class="flex items-center gap-2 mb-3">
-            <i data-lucide="clipboard-list" class="w-5 h-5 text-sky-600"></i>
-            <span class="font-bold text-sky-700 text-sm">problems（問題）</span>
+      <!-- 具体例（実際のやり取りのイメージ） -->
+      <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-4">
+        <div class="text-xs font-bold text-gray-500 mb-3">例：実際にはこんな形で保存されている</div>
+
+        <div class="bg-white border border-sky-300 rounded-lg p-3">
+          <div class="flex items-center gap-2">
+            <i data-lucide="clipboard-list" class="w-4 h-4 text-sky-600 flex-shrink-0"></i>
+            <span class="font-bold text-sm text-gray-800">問題：滅菌パックの封が甘い</span>
           </div>
-          <ul class="text-xs text-gray-600 space-y-1.5">
-            <li class="flex justify-between border-b border-sky-100 pb-1"><span>id</span><span class="text-gray-400">他のデータと区別するための番号</span></li>
-            <li class="flex justify-between border-b border-sky-100 pb-1"><span>title / description</span><span class="text-gray-400">タイトル・詳細</span></li>
-            <li class="flex justify-between border-b border-sky-100 pb-1"><span>category / priority</span><span class="text-gray-400">分類・優先度</span></li>
-            <li class="flex justify-between border-b border-sky-100 pb-1"><span>status / assignee</span><span class="text-gray-400">対応状況・担当者</span></li>
-            <li class="flex justify-between border-b border-sky-100 pb-1"><span>reported_by</span><span class="text-gray-400">報告者・役職</span></li>
-            <li class="flex justify-between"><span>deadline / created_at</span><span class="text-gray-400">期限・登録日</span></li>
-          </ul>
+          <div class="text-xs text-gray-500 mt-1 pl-6">機器・設備／緊急／報告者：伊藤さん／担当者：佐藤さん</div>
         </div>
 
-        <div class="flex flex-col items-center justify-center gap-1 px-2">
-          <i data-lucide="link-2" class="w-5 h-5 text-gray-400 rotate-90 md:rotate-0"></i>
-          <span class="text-xs text-gray-400 whitespace-nowrap">1つの問題に<br class="hidden md:block">複数のコメント</span>
+        <div class="pl-6 mt-2 space-y-2 border-l-2 border-sky-200 ml-3">
+          <div class="bg-amber-50 border border-amber-200 rounded-lg p-2 ml-4">
+            <div class="text-xs font-bold text-amber-700 flex items-center gap-1"><i data-lucide="message-square" class="w-3.5 h-3.5"></i>コメント：伊藤さん（スタッフ）</div>
+            <div class="text-xs text-gray-600 mt-0.5">今朝、封が甘いパックが2つ見つかった</div>
+          </div>
+          <div class="bg-amber-50 border border-amber-200 rounded-lg p-2 ml-4">
+            <div class="text-xs font-bold text-amber-700 flex items-center gap-1"><i data-lucide="message-square" class="w-3.5 h-3.5"></i>コメント：佐藤さん（担当者）</div>
+            <div class="text-xs text-gray-600 mt-0.5">滅菌機を点検します</div>
+          </div>
         </div>
 
-        <div class="flex-1 bg-amber-50 border border-amber-200 rounded-xl p-4">
-          <div class="flex items-center gap-2 mb-3">
-            <i data-lucide="message-square" class="w-5 h-5 text-amber-600"></i>
-            <span class="font-bold text-amber-700 text-sm">comments（コメント）</span>
-          </div>
-          <ul class="text-xs text-gray-600 space-y-1.5">
-            <li class="flex justify-between border-b border-amber-100 pb-1"><span>id</span><span class="text-gray-400">他のデータと区別するための番号</span></li>
-            <li class="flex justify-between border-b border-amber-100 pb-1"><span>problem_id</span><span class="text-gray-400">どの問題についてのコメントかを示す番号</span></li>
-            <li class="flex justify-between border-b border-amber-100 pb-1"><span>author / role</span><span class="text-gray-400">投稿者・役職</span></li>
-            <li class="flex justify-between border-b border-amber-100 pb-1"><span>text</span><span class="text-gray-400">コメント本文</span></li>
-            <li class="flex justify-between"><span>created_at</span><span class="text-gray-400">投稿日時</span></li>
-          </ul>
+        <p class="text-xs text-gray-500 mt-3">このように「問題」1件に対して、コメントが0件・1件・2件…と自由につながる。逆にコメント側は必ず「自分がどの問題への返信か」を持っている。</p>
+      </div>
+
+      <!-- なぜ2つに分けたか -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-red-50 border-l-4 border-red-400 p-3 rounded-lg">
+          <div class="font-bold text-xs text-red-700 mb-1">もし1つにまとめて保存したら</div>
+          <div class="text-xs text-gray-600">コメントを1件増やすたびに、同じ問題の情報（タイトル・カテゴリ・担当者など）を毎回書き写すことになり、同じ内容が何度も重複してしまう</div>
+        </div>
+        <div class="bg-green-50 border-l-4 border-green-400 p-3 rounded-lg">
+          <div class="font-bold text-xs text-green-700 mb-1">問題とコメントを分けたので</div>
+          <div class="text-xs text-gray-600">問題の情報は1回だけ保存すればよく、コメントは「どの問題への返信か」という印だけ持てばよい。重複がなく、あとから見返しやすい</div>
         </div>
       </div>
-      <p class="text-xs text-gray-500 mt-4">1つの問題には、コメントが0件のときもあれば何件もつくときもある。もし1つの表にまとめると、コメントが増えるたびに同じ問題の情報を何度も書き写すことになってしまう。それを避けるため表を分け、各コメントに「どの問題についてのものか」を示す番号（<span class="font-mono text-gray-600">problem_id</span>）を持たせて結びつけている。</p>
+
+      <div class="mt-4 pt-4 border-t border-gray-100">
+        <div class="text-xs font-bold text-gray-500 mb-2">保存している項目の一覧</div>
+        <div class="flex flex-col md:flex-row items-stretch gap-4">
+          <div class="flex-1 bg-sky-50 border border-sky-200 rounded-xl p-4">
+            <div class="flex items-center gap-2 mb-3">
+              <i data-lucide="clipboard-list" class="w-5 h-5 text-sky-600"></i>
+              <span class="font-bold text-sky-700 text-sm">問題の情報</span>
+            </div>
+            <ul class="text-xs text-gray-600 space-y-1.5">
+              <li class="flex justify-between border-b border-sky-100 pb-1"><span>タイトル・詳しい説明</span></li>
+              <li class="flex justify-between border-b border-sky-100 pb-1"><span>分類・優先度</span></li>
+              <li class="flex justify-between border-b border-sky-100 pb-1"><span>対応状況・担当者</span></li>
+              <li class="flex justify-between border-b border-sky-100 pb-1"><span>報告者・その役職</span></li>
+              <li class="flex justify-between"><span>対応期限・登録日</span></li>
+            </ul>
+          </div>
+
+          <div class="flex flex-col items-center justify-center gap-1 px-2">
+            <i data-lucide="link-2" class="w-5 h-5 text-gray-400 rotate-90 md:rotate-0"></i>
+            <span class="text-xs text-gray-400 whitespace-nowrap">1つの問題に<br class="hidden md:block">複数のコメント</span>
+          </div>
+
+          <div class="flex-1 bg-amber-50 border border-amber-200 rounded-xl p-4">
+            <div class="flex items-center gap-2 mb-3">
+              <i data-lucide="message-square" class="w-5 h-5 text-amber-600"></i>
+              <span class="font-bold text-amber-700 text-sm">コメントの情報</span>
+            </div>
+            <ul class="text-xs text-gray-600 space-y-1.5">
+              <li class="flex justify-between border-b border-amber-100 pb-1"><span>どの問題への返信か（番号）</span></li>
+              <li class="flex justify-between border-b border-amber-100 pb-1"><span>投稿者・その役職</span></li>
+              <li class="flex justify-between border-b border-amber-100 pb-1"><span>コメントの本文</span></li>
+              <li class="flex justify-between"><span>投稿日時</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- セクション4: 保存先と、それを選んだ理由 -->
