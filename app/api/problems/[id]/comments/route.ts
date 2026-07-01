@@ -30,8 +30,7 @@ export async function POST(
         created_at AS "createdAt"
     `;
 
-    const comment: Comment = row;
-    return NextResponse.json(comment, { status: 201 });
+    return NextResponse.json(row as Comment, { status: 201 });
   } catch (err) {
     console.error("[POST /api/problems/[id]/comments]", err);
     return NextResponse.json({ error: "コメントの追加に失敗しました" }, { status: 500 });

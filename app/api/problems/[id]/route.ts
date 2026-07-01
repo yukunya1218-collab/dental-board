@@ -41,7 +41,7 @@ export async function PATCH(
     const query = `UPDATE problems SET ${updates.join(", ")} WHERE id = $${idx} RETURNING id`;
     const rows = await sql.query(query, values);
 
-    if (rows.rows.length === 0) {
+    if (rows.length === 0) {
       return NextResponse.json({ error: "問題が見つかりません" }, { status: 404 });
     }
 

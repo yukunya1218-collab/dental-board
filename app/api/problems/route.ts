@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import sql from "@/lib/db";
-import { Problem, Comment } from "@/lib/data";
+import { Problem } from "@/lib/data";
 
 export async function GET() {
   try {
@@ -80,7 +80,7 @@ export async function POST(request: Request) {
         images
     `;
 
-    const newProblem: Problem = { ...row, comments: [] };
+    const newProblem: Problem = { ...(row as Omit<Problem, "comments">), comments: [] };
     return NextResponse.json(newProblem, { status: 201 });
   } catch (err) {
     console.error("[POST /api/problems]", err);
