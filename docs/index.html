@@ -21,7 +21,7 @@
         院内運営ツール ／ データベース連携
       </div>
       <h1 class="text-3xl md:text-4xl font-bold">院内問題ボードに、記憶を持たせる</h1>
-      <p class="mt-2 text-lg opacity-85">ブラウザを閉じると消えていたデータを、Neon（PostgreSQL）に保存し、誰の画面からも同じ記録が見えるようにした</p>
+      <p class="mt-2 text-lg opacity-85">さくら歯科クリニックの院内問題ボードを、Neon（PostgreSQL）と繋ぎ、誰の画面からも同じ記録が見えるようにした</p>
     </div>
   </header>
 
@@ -55,7 +55,7 @@
         </div>
         <div>
           <h2 class="text-xl font-bold text-gray-800">画面のキャプチャ</h2>
-          <p class="text-sm text-gray-500">起動すると、データベースに保存された内容がそのまま表示される</p>
+          <p class="text-sm text-gray-500">4ペイン構成の中身は、すべてデータベースから読み込まれている</p>
         </div>
       </div>
 
@@ -104,10 +104,99 @@
           </div>
         </div>
       </div>
-      <p class="text-xs text-gray-400 mt-3 text-center">4つのペイン（絞り込み・一覧・詳細・対応管理）の内容は、すべてデータベースから読み込まれている</p>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-4 text-xs text-center">
+        <div class="bg-sky-50 border border-sky-200 rounded-lg p-2">
+          <div class="font-bold text-sky-700">PANE 1</div>
+          <div class="text-gray-500 mt-0.5">フィルター</div>
+        </div>
+        <div class="bg-sky-50 border border-sky-200 rounded-lg p-2">
+          <div class="font-bold text-sky-700">PANE 2</div>
+          <div class="text-gray-500 mt-0.5">問題一覧</div>
+        </div>
+        <div class="bg-sky-50 border border-sky-200 rounded-lg p-2">
+          <div class="font-bold text-sky-700">PANE 3</div>
+          <div class="text-gray-500 mt-0.5">問題の詳細</div>
+        </div>
+        <div class="bg-sky-50 border border-sky-200 rounded-lg p-2">
+          <div class="font-bold text-sky-700">PANE 4</div>
+          <div class="text-gray-500 mt-0.5">対応管理</div>
+        </div>
+      </div>
     </section>
 
-    <!-- セクション2: 保持できるようにしたデータ -->
+    <!-- セクション2: 解決する課題（前回図解の文脈） -->
+    <section class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-10 h-10 bg-sky-100 rounded-xl flex items-center justify-center flex-shrink-0">
+          <i data-lucide="target" class="w-5 h-5 text-sky-600"></i>
+        </div>
+        <div>
+          <h2 class="text-xl font-bold text-gray-800">このツールが解決する課題</h2>
+          <p class="text-sm text-gray-500">3ヶ月目に設計した内容 ── 院内の問題が「誰も知らないまま」放置される状況を変える</p>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-center gap-3 mb-6">
+        <div class="bg-blue-100 px-4 py-3 rounded-xl text-center min-w-[90px]">
+          <i data-lucide="users" class="w-7 h-7 text-blue-600 mx-auto mb-1"></i>
+          <div class="font-bold text-sm">スタッフ</div>
+          <div class="text-xs text-gray-500">問題を投稿</div>
+        </div>
+        <i data-lucide="arrow-right" class="w-5 h-5 text-gray-400"></i>
+        <div class="bg-sky-100 px-4 py-3 rounded-xl text-center min-w-[90px]">
+          <i data-lucide="clipboard-list" class="w-7 h-7 text-sky-600 mx-auto mb-1"></i>
+          <div class="font-bold text-sm">院内問題ボード</div>
+          <div class="text-xs text-gray-500">集約・可視化</div>
+        </div>
+        <i data-lucide="arrow-right" class="w-5 h-5 text-gray-400"></i>
+        <div class="bg-teal-100 px-4 py-3 rounded-xl text-center min-w-[90px]">
+          <i data-lucide="user-check" class="w-7 h-7 text-teal-600 mx-auto mb-1"></i>
+          <div class="font-bold text-sm">院長・副院長</div>
+          <div class="text-xs text-gray-500">状況を把握</div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
+        <div class="bg-slate-50 border border-slate-200 rounded-lg p-3">
+          <div class="font-bold text-sm text-gray-700 mb-1">スタッフ</div>
+          <div class="text-xs text-gray-600">問題に気づいても、どこに・どうやって報告すればいいか明確でなかった</div>
+        </div>
+        <div class="bg-slate-50 border border-slate-200 rounded-lg p-3">
+          <div class="font-bold text-sm text-gray-700 mb-1">院長</div>
+          <div class="text-xs text-gray-600">診療以外の情報管理が難しく、問題を把握する仕組みが必要だった</div>
+        </div>
+        <div class="bg-slate-50 border border-slate-200 rounded-lg p-3">
+          <div class="font-bold text-sm text-gray-700 mb-1">副院長（遠隔）</div>
+          <div class="text-xs text-gray-600">常駐できないため、問題を把握するタイミングが遅れていた</div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded-lg">
+          <div class="flex items-center gap-2 mb-2">
+            <i data-lucide="x-circle" class="w-5 h-5 text-red-500"></i>
+            <span class="font-bold text-red-700">導入前の課題</span>
+          </div>
+          <ul class="space-y-1.5 text-gray-700 text-xs">
+            <li class="flex items-start gap-2"><i data-lucide="minus" class="w-3.5 h-3.5 text-red-400 mt-0.5 flex-shrink-0"></i><span>問題が個人メモ・口頭・LINEに分散して放置</span></li>
+            <li class="flex items-start gap-2"><i data-lucide="minus" class="w-3.5 h-3.5 text-red-400 mt-0.5 flex-shrink-0"></i><span>誰が何の問題を把握しているか見えない</span></li>
+          </ul>
+        </div>
+        <div class="bg-green-50 border-l-4 border-green-400 p-4 rounded-lg">
+          <div class="flex items-center gap-2 mb-2">
+            <i data-lucide="check-circle" class="w-5 h-5 text-green-500"></i>
+            <span class="font-bold text-green-700">ツールで解決すること</span>
+          </div>
+          <ul class="space-y-1.5 text-gray-700 text-xs">
+            <li class="flex items-start gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-green-500 mt-0.5 flex-shrink-0"></i><span>問題をボードに集約し、全件を一か所で把握</span></li>
+            <li class="flex items-start gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-green-500 mt-0.5 flex-shrink-0"></i><span>遠隔の副院長もリアルタイムで状況確認できる</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- セクション3: 保持できるようにしたデータ -->
     <section class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
       <div class="flex items-center gap-3 mb-6">
         <div class="w-10 h-10 bg-sky-100 rounded-xl flex items-center justify-center flex-shrink-0">
@@ -157,7 +246,7 @@
       <p class="text-xs text-gray-500 mt-4">問題1件に対してコメントは0件以上つく関係のため、別の表に分けて <span class="font-mono text-gray-600">problem_id</span> で紐づけた。1つの表にすべて詰め込むと、コメントの数だけ問題の情報が重複してしまうため。</p>
     </section>
 
-    <!-- セクション3: 保存先と、それを選んだ理由 -->
+    <!-- セクション4: 保存先と、それを選んだ理由 -->
     <section class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
       <div class="flex items-center gap-3 mb-6">
         <div class="w-10 h-10 bg-sky-100 rounded-xl flex items-center justify-center flex-shrink-0">
@@ -206,7 +295,7 @@
       </div>
     </section>
 
-    <!-- セクション4: 工夫したポイントと苦戦したポイント -->
+    <!-- セクション5: 工夫したポイントと苦戦したポイント -->
     <section class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
       <div class="flex items-center gap-3 mb-6">
         <div class="w-10 h-10 bg-sky-100 rounded-xl flex items-center justify-center flex-shrink-0">
@@ -243,7 +332,7 @@
               <div class="w-6 h-6 bg-amber-200 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 text-xs font-bold text-amber-700">3</div>
               <div>
                 <div class="font-medium text-sm text-gray-800">画面のコードはほぼ変えない</div>
-                <div class="text-xs text-gray-600 mt-1">前回作った画面の見た目・操作感はそのままに、データの出し入れ部分だけをAPI経由に差し替えた</div>
+                <div class="text-xs text-gray-600 mt-1">3ヶ月目に作った画面の見た目・操作感はそのままに、データの出し入れ部分だけをAPI経由に差し替えた</div>
               </div>
             </li>
           </ul>
@@ -283,8 +372,9 @@
 
   </main>
 
-  <footer class="text-center text-xs text-gray-400 py-8">
-    院内問題ボード ／ Next.js + Neon (PostgreSQL) + Vercel
+  <footer class="text-center text-xs text-gray-400 py-8 space-y-1">
+    <p>院内問題ボード ／ Next.js + Neon (PostgreSQL) + Vercel</p>
+    <p><a href="https://diagram-clinic-board.surge.sh/" class="underline">3ヶ月目の図解（画面ひな形・解決する課題の詳細）はこちら</a></p>
   </footer>
 
   <script>lucide.createIcons();</script>
