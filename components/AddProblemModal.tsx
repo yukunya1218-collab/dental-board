@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -17,11 +17,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CATEGORIES, Category, Priority, Problem } from "@/lib/data";
+import { CATEGORIES, Category, Priority, Problem, STAFF_MEMBERS, roleForStaffMember } from "@/lib/data";
 import { cn } from "@/lib/utils";
 import { ImagePlus, X } from "lucide-react";
 
 const MAX_IMAGES = 3;
+const REPORTER_STORAGE_KEY = "dental-board:last-reporter";
 
 interface AddProblemModalProps {
   open: boolean;
@@ -35,7 +36,15 @@ export function AddProblemModal({ open, onClose, onAdd }: AddProblemModalProps) 
   const [category, setCategory] = useState<Category | "">("");
   const [priority, setPriority] = useState<Priority>("通常");
   const [images, setImages] = useState<string[]>([]);
+  const [reporter, setReporter] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (open) {
+      const saved = typeof window !== "undefined" ? localStorage.getItem(REPORTER_STORAGE_KEY) : null;
+      setReporter(saved && STAFF_MEMBERS.includes(saved) ? saved : "");
+    }
+  }, [open]);
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files ?? []);
@@ -54,7 +63,8 @@ export function AddProblemModal({ open, onClose, onAdd }: AddProblemModalProps) 
   };
 
   const handleSubmit = () => {
-    if (!title.trim()) return;
+    if (!title.trim() || !reporter) return;
+    localStorage.setItem(REPORTER_STORAGE_KEY, reporter);
     onAdd({
       title: title.trim(),
       description: description.trim(),
@@ -62,8 +72,8 @@ export function AddProblemModal({ open, onClose, onAdd }: AddProblemModalProps) 
       status: "未対応",
       priority,
       assignee: null,
-      reportedBy: "あなた",
-      reportedByRole: "スタッフ",
+      reportedBy: reporter,
+      reportedByRole: roleForStaffMember(reporter),
       deadline: null,
       images,
     });
@@ -105,6 +115,24 @@ export function AddProblemModal({ open, onClose, onAdd }: AddProblemModalProps) 
             </div>
           </div>
 
+          {/* Reporter - required */}
+          <div>
+            <p className="text-xs font-medium text-slate-500 mb-1.5">
+              報告者 <span className="text-amber-600">*</span>
+            </p>
+            <Select value={reporter} onValueChange={(v) => setReporter(v ?? "")}>
+              <SelectTrigger className="text-sm">
+                <SelectValue placeholder="自分の名前を選択..." />
+              </SelectTrigger>
+              <SelectContent>
+                {STAFF_MEMBERS.map((s) => (
+                  <SelectItem key={s} value={s}>{s}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-slate-400 mt-1">ログインの代わりに、報告者を選んでください。次回から自動で選択されます。</p>
+          </div>
+
           {/* Title - required */}
           <div>
             <p className="text-xs font-medium text-slate-500 mb-1.5">
@@ -114,8 +142,7 @@ export function AddProblemModal({ open, onClose, onAdd }: AddProblemModalProps) 
               placeholder="例：3番チェアの吸引が弱い"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && title.trim() && handleSubmit()}
-              autoFocus
+              onKeyDown={(e) => e.key === "Enter" && title.trim() && reporter && handleSubmit()}
               className="text-sm"
             />
             <p className="text-xs text-slate-400 mt-1">これだけで登録できます。Enter で即登録。</p>
@@ -194,7 +221,7 @@ export function AddProblemModal({ open, onClose, onAdd }: AddProblemModalProps) 
             </Button>
             <Button
               onClick={handleSubmit}
-              disabled={!title.trim()}
+              disabled={!title.trim() || !reporter}
               className="flex-1 bg-slate-700 hover:bg-slate-800 text-white"
             >
               登録する
