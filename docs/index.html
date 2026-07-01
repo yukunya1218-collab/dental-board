@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>院内問題ボードに記憶を持たせる</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Noto Sans JP', sans-serif; }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+  <!-- ヘッダー -->
+  <header class="bg-gradient-to-r from-sky-800 to-sky-500 text-white py-10">
+    <div class="max-w-4xl mx-auto px-4">
+      <div class="inline-block bg-white bg-opacity-20 text-sm font-medium px-3 py-1 rounded-full mb-3">
+        院内運営ツール ／ データベース連携
+      </div>
+      <h1 class="text-3xl md:text-4xl font-bold">院内問題ボードに、記憶を持たせる</h1>
+      <p class="mt-2 text-lg opacity-85">ブラウザを閉じると消えていたデータを、Neon（PostgreSQL）に保存し、誰の画面からも同じ記録が見えるようにした</p>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-4 py-8 space-y-6">
+
+    <!-- ヒーロー一枚絵 -->
+    <section class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+      <p class="text-center text-lg font-medium text-gray-700 mb-6">
+        ひとことで言えば：<span class="font-bold text-sky-700">画面の中だけの記録</span>を、<span class="font-bold text-sky-700">データベースの記録</span>に変えた
+      </p>
+      <div class="flex flex-col md:flex-row items-center justify-center gap-4">
+        <div class="bg-red-50 border-l-4 border-red-400 px-5 py-4 rounded-lg text-center w-full md:w-56">
+          <i data-lucide="refresh-cw" class="w-6 h-6 text-red-500 mx-auto mb-2"></i>
+          <div class="font-bold text-sm text-red-700">導入前</div>
+          <div class="text-xs text-gray-600 mt-1">リロードすると入力がすべて消える。自分のパソコンでしか見られない</div>
+        </div>
+        <i data-lucide="arrow-right" class="w-6 h-6 text-gray-400 rotate-90 md:rotate-0"></i>
+        <div class="bg-green-50 border-l-4 border-green-400 px-5 py-4 rounded-lg text-center w-full md:w-56">
+          <i data-lucide="database" class="w-6 h-6 text-green-600 mx-auto mb-2"></i>
+          <div class="font-bold text-sm text-green-700">導入後</div>
+          <div class="text-xs text-gray-600 mt-1">リロードしても残る。別の端末やスマホからも同じ内容が見える</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- セクション1: 画面のキャプチャ -->
+    <section class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-10 h-10 bg-sky-100 rounded-xl flex items-center justify-center flex-shrink-0">
+          <i data-lucide="monitor" class="w-5 h-5 text-sky-600"></i>
+        </div>
+        <div>
+          <h2 class="text-xl font-bold text-gray-800">画面のキャプチャ</h2>
+          <p class="text-sm text-gray-500">起動すると、データベースに保存された内容がそのまま表示される</p>
+        </div>
+      </div>
+
+      <div class="bg-gray-800 rounded-xl overflow-hidden shadow-lg">
+        <div class="bg-gray-900 px-4 py-2 flex items-center gap-2">
+          <div class="w-3 h-3 rounded-full bg-red-500"></div>
+          <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+          <div class="w-3 h-3 rounded-full bg-green-500"></div>
+          <div class="bg-gray-700 rounded flex-1 mx-4 px-3 py-1 text-xs text-gray-300">
+            dental-board-five.vercel.app
+          </div>
+        </div>
+        <div class="bg-slate-100 p-3 grid grid-cols-1 md:grid-cols-4 gap-2 text-xs">
+          <div class="bg-white rounded-lg p-2 space-y-1">
+            <div class="font-bold text-slate-600 mb-1">カテゴリ・ステータス</div>
+            <div class="bg-slate-700 text-white rounded px-2 py-1">すべて 6</div>
+            <div class="text-slate-500 px-2 py-0.5">機器・設備 2</div>
+            <div class="text-slate-500 px-2 py-0.5">患者対応 1</div>
+            <div class="border-t border-slate-100 my-1"></div>
+            <div class="flex items-center gap-1 text-red-500 px-2 py-0.5"><span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>未対応 2</div>
+            <div class="flex items-center gap-1 text-amber-500 px-2 py-0.5"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>対応中 2</div>
+          </div>
+          <div class="bg-white rounded-lg p-2 space-y-1.5">
+            <div class="bg-red-50 border border-red-200 rounded px-2 py-1 text-red-600 font-bold">緊急 今日中に対応が必要 3件</div>
+            <div class="border border-slate-200 rounded px-2 py-1.5">
+              <div class="font-medium text-slate-700">3番チェアの吸引が弱い</div>
+              <div class="text-amber-600 mt-0.5">対応中 ・機器・設備</div>
+            </div>
+            <div class="border border-slate-200 rounded px-2 py-1.5">
+              <div class="font-medium text-slate-700">滅菌パックの封が甘い</div>
+              <div class="text-amber-600 mt-0.5">対応中 ・機器・設備</div>
+            </div>
+          </div>
+          <div class="bg-white rounded-lg p-2 space-y-1.5">
+            <div class="font-bold text-slate-600">滅菌パックの封が甘い個体が出た</div>
+            <div class="text-slate-400">伊藤さん（スタッフ）が報告</div>
+            <div class="border border-slate-200 rounded px-2 py-1.5 text-slate-500">今朝、滅菌済みのパックが完全に封じられていないものが2つ見つかった…</div>
+            <div class="border-t border-slate-100 pt-1 text-slate-400">コメント（2件）</div>
+          </div>
+          <div class="bg-white rounded-lg p-2 space-y-1.5">
+            <div class="font-bold text-slate-600 mb-1">対応管理</div>
+            <div class="text-slate-400">ステータス</div>
+            <div class="bg-amber-100 text-amber-700 rounded px-2 py-1">対応中</div>
+            <div class="text-slate-400 mt-1">担当者</div>
+            <div class="bg-slate-100 rounded px-2 py-1">佐藤さん</div>
+          </div>
+        </div>
+      </div>
+      <p class="text-xs text-gray-400 mt-3 text-center">4つのペイン（絞り込み・一覧・詳細・対応管理）の内容は、すべてデータベースから読み込まれている</p>
+    </section>
+
+    <!-- セクション2: 保持できるようにしたデータ -->
+    <section class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-10 h-10 bg-sky-100 rounded-xl flex items-center justify-center flex-shrink-0">
+          <i data-lucide="table" class="w-5 h-5 text-sky-600"></i>
+        </div>
+        <div>
+          <h2 class="text-xl font-bold text-gray-800">保持できるようにしたデータ</h2>
+          <p class="text-sm text-gray-500">「問題」と「コメント」の2つの表に分け、1対多で紐づけた</p>
+        </div>
+      </div>
+
+      <div class="flex flex-col md:flex-row items-stretch gap-4">
+        <div class="flex-1 bg-sky-50 border border-sky-200 rounded-xl p-4">
+          <div class="flex items-center gap-2 mb-3">
+            <i data-lucide="clipboard-list" class="w-5 h-5 text-sky-600"></i>
+            <span class="font-bold text-sky-700 text-sm">problems（問題）</span>
+          </div>
+          <ul class="text-xs text-gray-600 space-y-1.5">
+            <li class="flex justify-between border-b border-sky-100 pb-1"><span>id</span><span class="text-gray-400">主キー</span></li>
+            <li class="flex justify-between border-b border-sky-100 pb-1"><span>title / description</span><span class="text-gray-400">タイトル・詳細</span></li>
+            <li class="flex justify-between border-b border-sky-100 pb-1"><span>category / priority</span><span class="text-gray-400">分類・優先度</span></li>
+            <li class="flex justify-between border-b border-sky-100 pb-1"><span>status / assignee</span><span class="text-gray-400">対応状況・担当者</span></li>
+            <li class="flex justify-between border-b border-sky-100 pb-1"><span>reported_by</span><span class="text-gray-400">報告者・役職</span></li>
+            <li class="flex justify-between"><span>deadline / created_at</span><span class="text-gray-400">期限・登録日</span></li>
+          </ul>
+        </div>
+
+        <div class="flex flex-col items-center justify-center gap-1 px-2">
+          <i data-lucide="link-2" class="w-5 h-5 text-gray-400 rotate-90 md:rotate-0"></i>
+          <span class="text-xs text-gray-400 whitespace-nowrap">1つの問題に<br class="hidden md:block">複数のコメント</span>
+        </div>
+
+        <div class="flex-1 bg-amber-50 border border-amber-200 rounded-xl p-4">
+          <div class="flex items-center gap-2 mb-3">
+            <i data-lucide="message-square" class="w-5 h-5 text-amber-600"></i>
+            <span class="font-bold text-amber-700 text-sm">comments（コメント）</span>
+          </div>
+          <ul class="text-xs text-gray-600 space-y-1.5">
+            <li class="flex justify-between border-b border-amber-100 pb-1"><span>id</span><span class="text-gray-400">主キー</span></li>
+            <li class="flex justify-between border-b border-amber-100 pb-1"><span>problem_id</span><span class="text-gray-400">problems.id への参照</span></li>
+            <li class="flex justify-between border-b border-amber-100 pb-1"><span>author / role</span><span class="text-gray-400">投稿者・役職</span></li>
+            <li class="flex justify-between border-b border-amber-100 pb-1"><span>text</span><span class="text-gray-400">コメント本文</span></li>
+            <li class="flex justify-between"><span>created_at</span><span class="text-gray-400">投稿日時</span></li>
+          </ul>
+        </div>
+      </div>
+      <p class="text-xs text-gray-500 mt-4">問題1件に対してコメントは0件以上つく関係のため、別の表に分けて <span class="font-mono text-gray-600">problem_id</span> で紐づけた。1つの表にすべて詰め込むと、コメントの数だけ問題の情報が重複してしまうため。</p>
+    </section>
+
+    <!-- セクション3: 保存先と、それを選んだ理由 -->
+    <section class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-10 h-10 bg-sky-100 rounded-xl flex items-center justify-center flex-shrink-0">
+          <i data-lucide="server" class="w-5 h-5 text-sky-600"></i>
+        </div>
+        <div>
+          <h2 class="text-xl font-bold text-gray-800">保存先と、それを選んだ理由</h2>
+          <p class="text-sm text-gray-500">Vercel経由でNeon（サーバーレスPostgres）を選択</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
+        <div class="border border-gray-200 rounded-xl p-4 opacity-60">
+          <div class="font-bold text-sm text-gray-700 mb-1">Markdown</div>
+          <div class="text-xs text-gray-500">自分ひとりのメモなら十分。複数人での同時利用には不向き</div>
+        </div>
+        <div class="border border-gray-200 rounded-xl p-4 opacity-60">
+          <div class="font-bold text-sm text-gray-700 mb-1">JSON</div>
+          <div class="text-xs text-gray-500">機械的に扱いやすいが、複数人が同時に書き換えると壊れやすい</div>
+        </div>
+        <div class="border-2 border-sky-400 bg-sky-50 rounded-xl p-4">
+          <div class="flex items-center gap-1.5 mb-1">
+            <i data-lucide="check-circle" class="w-4 h-4 text-sky-600"></i>
+            <span class="font-bold text-sm text-sky-700">データベース（採用）</span>
+          </div>
+          <div class="text-xs text-gray-600">スタッフ・院長・副院長が同時に読み書きしても矛盾なく扱える</div>
+        </div>
+      </div>
+
+      <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+        <div class="font-bold text-sm text-gray-700 mb-3">選んだ理由：関係者が同時にアクセスするツールだったこと</div>
+        <ul class="space-y-2 text-sm text-gray-600">
+          <li class="flex items-start gap-2">
+            <i data-lucide="users" class="w-4 h-4 text-sky-500 mt-0.5 flex-shrink-0"></i>
+            <span>スタッフ・院長・遠隔の副院長が<span class="font-medium text-gray-800">同時に同じ画面を見る</span>前提のツールのため、1人のブラウザにしか残らないlocalStorageでは成立しない</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <i data-lucide="git-branch" class="w-4 h-4 text-sky-500 mt-0.5 flex-shrink-0"></i>
+            <span>問題とコメントのように<span class="font-medium text-gray-800">「1対多」の関係を持つデータ</span>は、表を分けて紐づけられるデータベースの方が扱いやすい</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <i data-lucide="key" class="w-4 h-4 text-sky-500 mt-0.5 flex-shrink-0"></i>
+            <span>接続情報（<span class="font-mono text-xs">DATABASE_URL</span>）はVercelの環境変数として保管し、<span class="font-medium text-gray-800">コードのリポジトリには含めない</span>ようにした。AIが自由に読めるリポジトリと、鍵がないと開けないデータベースを意図的に分けている</span>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- セクション4: 工夫したポイントと苦戦したポイント -->
+    <section class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-10 h-10 bg-sky-100 rounded-xl flex items-center justify-center flex-shrink-0">
+          <i data-lucide="wrench" class="w-5 h-5 text-sky-600"></i>
+        </div>
+        <div>
+          <h2 class="text-xl font-bold text-gray-800">工夫したポイントと苦戦したポイント</h2>
+          <p class="text-sm text-gray-500">ローカル動作の確認から公開まで、実際につまずいた箇所</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-amber-50 border border-amber-200 p-5 rounded-xl">
+          <div class="flex items-center gap-2 mb-4">
+            <i data-lucide="lightbulb" class="w-5 h-5 text-amber-500"></i>
+            <span class="font-bold text-amber-700">工夫したポイント</span>
+          </div>
+          <ul class="space-y-4">
+            <li class="flex items-start gap-3">
+              <div class="w-6 h-6 bg-amber-200 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 text-xs font-bold text-amber-700">1</div>
+              <div>
+                <div class="font-medium text-sm text-gray-800">ログイン無しの「報告者選択」</div>
+                <div class="text-xs text-gray-600 mt-1">本格的なログイン機能は作らず、投稿時に自分の名前をプルダウンで選ぶだけの軽い仕組みにした。一度選ぶとブラウザに記憶され、次回から自動選択される</div>
+              </div>
+            </li>
+            <li class="flex items-start gap-3">
+              <div class="w-6 h-6 bg-amber-200 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 text-xs font-bold text-amber-700">2</div>
+              <div>
+                <div class="font-medium text-sm text-gray-800">環境変数が無くてもビルドが壊れない設計</div>
+                <div class="text-xs text-gray-600 mt-1">データベース接続を、実際に使う瞬間まで遅らせる作りにした。これにより、Vercelのビルド時に接続情報が無くてもエラーにならないようにした</div>
+              </div>
+            </li>
+            <li class="flex items-start gap-3">
+              <div class="w-6 h-6 bg-amber-200 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 text-xs font-bold text-amber-700">3</div>
+              <div>
+                <div class="font-medium text-sm text-gray-800">画面のコードはほぼ変えない</div>
+                <div class="text-xs text-gray-600 mt-1">前回作った画面の見た目・操作感はそのままに、データの出し入れ部分だけをAPI経由に差し替えた</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="bg-slate-50 border border-slate-200 p-5 rounded-xl">
+          <div class="flex items-center gap-2 mb-4">
+            <i data-lucide="wrench" class="w-5 h-5 text-slate-500"></i>
+            <span class="font-bold text-slate-700">苦戦したポイント</span>
+          </div>
+          <ul class="space-y-4">
+            <li class="flex items-start gap-3">
+              <i data-lucide="alert-circle" class="w-5 h-5 text-slate-400 flex-shrink-0 mt-0.5"></i>
+              <div>
+                <div class="font-medium text-sm text-gray-800">データベースからの戻り値の形が想定と違った</div>
+                <div class="text-xs text-gray-600 mt-1">問い合わせ方法によって、結果が配列そのものだったり配列を包んだ形だったりと差があり、ビルドが3回連続で型エラーになった。1つずつ実際の戻り値を確認して修正した</div>
+              </div>
+            </li>
+            <li class="flex items-start gap-3">
+              <i data-lucide="alert-circle" class="w-5 h-5 text-slate-400 flex-shrink-0 mt-0.5"></i>
+              <div>
+                <div class="font-medium text-sm text-gray-800">公開直前にデプロイがブロックされた</div>
+                <div class="text-xs text-gray-600 mt-1">コードを保存した際のメールアドレスと、GitHubアカウントのメールアドレスが一致せず、Vercelに公開を止められた。設定を実際のアカウントに合わせて解決した</div>
+              </div>
+            </li>
+            <li class="flex items-start gap-3">
+              <i data-lucide="alert-circle" class="w-5 h-5 text-slate-400 flex-shrink-0 mt-0.5"></i>
+              <div>
+                <div class="font-medium text-sm text-gray-800">環境変数の名前ズレに気づきにくい</div>
+                <div class="text-xs text-gray-600 mt-1">データベース連携時に変数名を自由に変えられる設定があり、コードが読み込む名前とズレるとエラーにすら出ずに接続できない状態になりかねなかった。作成時に名前を指定して統一した</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="text-center text-xs text-gray-400 py-8">
+    院内問題ボード ／ Next.js + Neon (PostgreSQL) + Vercel
+  </footer>
+
+  <script>lucide.createIcons();</script>
+</body>
+</html>
