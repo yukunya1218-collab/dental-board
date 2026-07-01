@@ -1,28 +1,42 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { NavPane } from "@/components/NavPane";
 import { ProblemList } from "@/components/ProblemList";
 import { ProblemDetail } from "@/components/ProblemDetail";
 import { ActionPane } from "@/components/ActionPane";
 import { AddProblemModal } from "@/components/AddProblemModal";
-import {
-  Problem,
-  Status,
-  Category,
-  Comment,
-  INITIAL_PROBLEMS,
-} from "@/lib/data";
+import { Problem, Status, Category, Comment } from "@/lib/data";
 
 export default function Home() {
-  const [problems, setProblems] = useState<Problem[]>(INITIAL_PROBLEMS);
-  const [selectedId, setSelectedId] = useState<string | null>("1");
+  const [problems, setProblems] = useState<Problem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<Status | null>(null);
   const [urgentOnly, setUrgentOnly] = useState(false);
   const [addModalOpen, setAddModalOpen] = useState(false);
-  // mobile tab: "list" | "detail"
   const [mobileTab, setMobileTab] = useState<"list" | "detail">("list");
+
+  const fetchProblems = useCallback(async () => {
+    try {
+      const res = await fetch("/api/problems");
+      if (!res.ok) throw new Error("fetch failed");
+      const data: Problem[] = await res.json();
+      setProblems(data);
+      if (data.length > 0 && !selectedId) {
+        setSelectedId(data[0].id);
+      }
+    } catch (err) {
+      console.error("問題の取得に失敗しました", err);
+    } finally {
+      setLoading(false);
+    }
+  }, [selectedId]);
+
+  useEffect(() => {
+    fetchProblems();
+  }, []);  // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleUrgentFilter = () => {
     setUrgentOnly(true);
@@ -39,52 +53,98 @@ export default function Home() {
     setMobileTab("detail");
   };
 
-  const handleAddProblem = (data: Omit<Problem, "id" | "comments" | "createdAt">) => {
-    const newProblem: Problem = {
-      ...data,
-      id: String(Date.now()),
-      images: data.images ?? [],
-      comments: [],
-      createdAt: new Date().toISOString(),
-    };
-    setProblems((prev) => [newProblem, ...prev]);
-    setSelectedId(newProblem.id);
+  const handleAddProblem = async (data: Omit<Problem, "id" | "comments" | "createdAt">) => {
+    try {
+      const res = await fetch("/api/problems", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error("POST failed");
+      const newProblem: Problem = await res.json();
+      setProblems((prev) => [newProblem, ...prev]);
+      setSelectedId(newProblem.id);
+    } catch (err) {
+      console.error("問題の登録に失敗しました", err);
+    }
   };
 
-  const handleAddComment = (problemId: string, text: string) => {
-    const newComment: Comment = {
-      id: String(Date.now()),
-      author: "あなた",
-      role: "スタッフ",
-      text,
-      createdAt: new Date().toISOString(),
-    };
-    setProblems((prev) =>
-      prev.map((p) =>
-        p.id === problemId
-          ? { ...p, comments: [...p.comments, newComment] }
-          : p
-      )
-    );
+  const handleAddComment = async (problemId: string, text: string) => {
+    try {
+      const res = await fetch(`/api/problems/${problemId}/comments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text }),
+      });
+      if (!res.ok) throw new Error("POST comment failed");
+      const newComment: Comment = await res.json();
+      setProblems((prev) =>
+        prev.map((p) =>
+          p.id === problemId
+            ? { ...p, comments: [...p.comments, newComment] }
+            : p
+        )
+      );
+    } catch (err) {
+      console.error("コメントの追加に失敗しました", err);
+    }
   };
 
-  const handleStatusChange = (id: string, status: Status) => {
-    setProblems((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, status } : p))
-    );
+  const handleStatusChange = async (id: string, status: Status) => {
+    setProblems((prev) => prev.map((p) => (p.id === id ? { ...p, status } : p)));
+    try {
+      const res = await fetch(`/api/problems/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      });
+      if (!res.ok) throw new Error("PATCH failed");
+    } catch (err) {
+      console.error("ステータスの更新に失敗しました", err);
+      fetchProblems();
+    }
   };
 
-  const handleAssigneeChange = (id: string, assignee: string | null) => {
-    setProblems((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, assignee } : p))
-    );
+  const handleAssigneeChange = async (id: string, assignee: string | null) => {
+    setProblems((prev) => prev.map((p) => (p.id === id ? { ...p, assignee } : p)));
+    try {
+      const res = await fetch(`/api/problems/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ assignee }),
+      });
+      if (!res.ok) throw new Error("PATCH failed");
+    } catch (err) {
+      console.error("担当者の更新に失敗しました", err);
+      fetchProblems();
+    }
   };
 
-  const handleDeadlineChange = (id: string, deadline: string | null) => {
-    setProblems((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, deadline } : p))
-    );
+  const handleDeadlineChange = async (id: string, deadline: string | null) => {
+    setProblems((prev) => prev.map((p) => (p.id === id ? { ...p, deadline } : p)));
+    try {
+      const res = await fetch(`/api/problems/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ deadline }),
+      });
+      if (!res.ok) throw new Error("PATCH failed");
+    } catch (err) {
+      console.error("期限の更新に失敗しました", err);
+      fetchProblems();
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-slate-100">
+        <div className="flex flex-col items-center gap-3 text-slate-500">
+          <div className="w-8 h-8 border-2 border-slate-300 border-t-slate-600 rounded-full animate-spin" />
+          <span className="text-sm">読み込み中...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen flex flex-col overflow-hidden bg-slate-100">
