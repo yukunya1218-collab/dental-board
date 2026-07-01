@@ -21,7 +21,7 @@
         院内運営ツール ／ データベース連携
       </div>
       <h1 class="text-3xl md:text-4xl font-bold">院内問題ボードに、記憶を持たせる</h1>
-      <p class="mt-2 text-lg opacity-85">さくら歯科クリニックの院内問題ボードを、Neon（PostgreSQL）と繋ぎ、誰の画面からも同じ記録が見えるようにした</p>
+      <p class="mt-2 text-lg opacity-85">さくら歯科クリニックの院内問題ボードを、データベース（Neon）と繋ぎ、誰の画面からも同じ記録が見えるようにした</p>
     </div>
   </header>
 
@@ -204,7 +204,7 @@
         </div>
         <div>
           <h2 class="text-xl font-bold text-gray-800">保持できるようにしたデータ</h2>
-          <p class="text-sm text-gray-500">「問題」と「コメント」の2つの表に分け、1対多で紐づけた</p>
+          <p class="text-sm text-gray-500">「問題」と「コメント」を別々の表に分け、1つの問題に何件でもコメントをつけられるようにした</p>
         </div>
       </div>
 
@@ -215,7 +215,7 @@
             <span class="font-bold text-sky-700 text-sm">problems（問題）</span>
           </div>
           <ul class="text-xs text-gray-600 space-y-1.5">
-            <li class="flex justify-between border-b border-sky-100 pb-1"><span>id</span><span class="text-gray-400">主キー</span></li>
+            <li class="flex justify-between border-b border-sky-100 pb-1"><span>id</span><span class="text-gray-400">他のデータと区別するための番号</span></li>
             <li class="flex justify-between border-b border-sky-100 pb-1"><span>title / description</span><span class="text-gray-400">タイトル・詳細</span></li>
             <li class="flex justify-between border-b border-sky-100 pb-1"><span>category / priority</span><span class="text-gray-400">分類・優先度</span></li>
             <li class="flex justify-between border-b border-sky-100 pb-1"><span>status / assignee</span><span class="text-gray-400">対応状況・担当者</span></li>
@@ -235,15 +235,15 @@
             <span class="font-bold text-amber-700 text-sm">comments（コメント）</span>
           </div>
           <ul class="text-xs text-gray-600 space-y-1.5">
-            <li class="flex justify-between border-b border-amber-100 pb-1"><span>id</span><span class="text-gray-400">主キー</span></li>
-            <li class="flex justify-between border-b border-amber-100 pb-1"><span>problem_id</span><span class="text-gray-400">problems.id への参照</span></li>
+            <li class="flex justify-between border-b border-amber-100 pb-1"><span>id</span><span class="text-gray-400">他のデータと区別するための番号</span></li>
+            <li class="flex justify-between border-b border-amber-100 pb-1"><span>problem_id</span><span class="text-gray-400">どの問題についてのコメントかを示す番号</span></li>
             <li class="flex justify-between border-b border-amber-100 pb-1"><span>author / role</span><span class="text-gray-400">投稿者・役職</span></li>
             <li class="flex justify-between border-b border-amber-100 pb-1"><span>text</span><span class="text-gray-400">コメント本文</span></li>
             <li class="flex justify-between"><span>created_at</span><span class="text-gray-400">投稿日時</span></li>
           </ul>
         </div>
       </div>
-      <p class="text-xs text-gray-500 mt-4">問題1件に対してコメントは0件以上つく関係のため、別の表に分けて <span class="font-mono text-gray-600">problem_id</span> で紐づけた。1つの表にすべて詰め込むと、コメントの数だけ問題の情報が重複してしまうため。</p>
+      <p class="text-xs text-gray-500 mt-4">1つの問題には、コメントが0件のときもあれば何件もつくときもある。もし1つの表にまとめると、コメントが増えるたびに同じ問題の情報を何度も書き写すことになってしまう。それを避けるため表を分け、各コメントに「どの問題についてのものか」を示す番号（<span class="font-mono text-gray-600">problem_id</span>）を持たせて結びつけている。</p>
     </section>
 
     <!-- セクション4: 保存先と、それを選んだ理由 -->
@@ -254,7 +254,7 @@
         </div>
         <div>
           <h2 class="text-xl font-bold text-gray-800">保存先と、それを選んだ理由</h2>
-          <p class="text-sm text-gray-500">Vercel経由でNeon（サーバーレスPostgres）を選択</p>
+          <p class="text-sm text-gray-500">Vercel経由で、データベースサービス「Neon」を選択</p>
         </div>
       </div>
 
@@ -285,11 +285,11 @@
           </li>
           <li class="flex items-start gap-2">
             <i data-lucide="git-branch" class="w-4 h-4 text-sky-500 mt-0.5 flex-shrink-0"></i>
-            <span>問題とコメントのように<span class="font-medium text-gray-800">「1対多」の関係を持つデータ</span>は、表を分けて紐づけられるデータベースの方が扱いやすい</span>
+            <span>問題とコメントのように<span class="font-medium text-gray-800">「1つに対して複数」つながるデータ</span>は、表を分けてひもづけられるデータベースの方が扱いやすい</span>
           </li>
           <li class="flex items-start gap-2">
             <i data-lucide="key" class="w-4 h-4 text-sky-500 mt-0.5 flex-shrink-0"></i>
-            <span>接続情報（<span class="font-mono text-xs">DATABASE_URL</span>）はVercelの環境変数として保管し、<span class="font-medium text-gray-800">コードのリポジトリには含めない</span>ようにした。AIが自由に読めるリポジトリと、鍵がないと開けないデータベースを意図的に分けている</span>
+            <span>データベースにつなぐための鍵（接続情報）は、<span class="font-medium text-gray-800">コードとは別の「Vercelの設定画面」だけ</span>に保管した。コードは誰でも見られる場所に置いているが、データベースの鍵は関係者以外に見せたくないため、あえて保管場所を分けている</span>
           </li>
         </ul>
       </div>
@@ -303,14 +303,14 @@
           </div>
           <div class="border-2 border-sky-400 bg-sky-50 rounded-lg p-3">
             <div class="flex items-center gap-1 font-bold text-sky-700 mb-1"><i data-lucide="check-circle" class="w-3.5 h-3.5"></i>問題とコメントだけ分ける（採用）</div>
-            <div class="text-gray-600">1対多の関係だけを表に分け、スタッフやカテゴリは固定リストのまま扱う</div>
+            <div class="text-gray-600">「1つに対して複数」つながる関係だけを表に分け、スタッフやカテゴリは固定リストのまま扱う</div>
           </div>
           <div class="border border-gray-200 rounded-lg p-3 opacity-60">
             <div class="font-bold text-gray-600 mb-1">スタッフ・カテゴリも表に分ける</div>
             <div class="text-gray-500">大人数の医院やスタッフの入れ替えが多い場合向き。今回の規模には過剰</div>
           </div>
         </div>
-        <p class="text-xs text-gray-500">1医院・スタッフ数名〜十数名という個人経営規模では、スタッフやカテゴリまで表に分けても管理コストが増えるだけで恩恵が薄い。「問題とコメントの1対多」という、今後も変わらない関係だけを表に分け、それ以外は今の身の丈に合わせてシンプルに保つという判断をした。</p>
+        <p class="text-xs text-gray-500">1医院・スタッフ数名〜十数名という個人経営規模では、スタッフやカテゴリまで表に分けても管理の手間が増えるだけで恩恵が薄い。「問題とコメントが1つに対して複数つながる」という、今後も変わらない関係だけを表に分け、それ以外は今の身の丈に合わせてシンプルに保つという判断をした。</p>
       </div>
     </section>
 
@@ -343,15 +343,15 @@
             <li class="flex items-start gap-3">
               <div class="w-6 h-6 bg-amber-200 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 text-xs font-bold text-amber-700">2</div>
               <div>
-                <div class="font-medium text-sm text-gray-800">環境変数が無くてもビルドが壊れない設計</div>
-                <div class="text-xs text-gray-600 mt-1">データベース接続を、実際に使う瞬間まで遅らせる作りにした。これにより、Vercelのビルド時に接続情報が無くてもエラーにならないようにした</div>
+                <div class="font-medium text-sm text-gray-800">設定情報が無くても公開作業が止まらない設計</div>
+                <div class="text-xs text-gray-600 mt-1">データベースへの接続を、実際に使う瞬間まで遅らせる作りにした。これにより、Vercelでアプリを公開する作業の途中で、接続情報がまだ無くてもエラーにならないようにした</div>
               </div>
             </li>
             <li class="flex items-start gap-3">
               <div class="w-6 h-6 bg-amber-200 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 text-xs font-bold text-amber-700">3</div>
               <div>
                 <div class="font-medium text-sm text-gray-800">画面のコードはほぼ変えない</div>
-                <div class="text-xs text-gray-600 mt-1">3ヶ月目に作った画面の見た目・操作感はそのままに、データの出し入れ部分だけをAPI経由に差し替えた</div>
+                <div class="text-xs text-gray-600 mt-1">3ヶ月目に作った画面の見た目・操作感はそのままに、データの出し入れの仕組みだけをデータベースとやり取りする形に差し替えた</div>
               </div>
             </li>
           </ul>
@@ -366,22 +366,22 @@
             <li class="flex items-start gap-3">
               <i data-lucide="alert-circle" class="w-5 h-5 text-slate-400 flex-shrink-0 mt-0.5"></i>
               <div>
-                <div class="font-medium text-sm text-gray-800">データベースからの戻り値の形が想定と違った</div>
-                <div class="text-xs text-gray-600 mt-1">問い合わせ方法によって、結果が配列そのものだったり配列を包んだ形だったりと差があり、ビルドが3回連続で型エラーになった。1つずつ実際の戻り値を確認して修正した</div>
+                <div class="font-medium text-sm text-gray-800">データベースから返ってくる結果の形が、想定と違った</div>
+                <div class="text-xs text-gray-600 mt-1">問い合わせの方法によって、結果の形（データの並び方）に微妙な違いがあり、アプリを公開する作業のたびに3回連続でエラーになった。1つずつ実際の結果を確認しながら直した</div>
               </div>
             </li>
             <li class="flex items-start gap-3">
               <i data-lucide="alert-circle" class="w-5 h-5 text-slate-400 flex-shrink-0 mt-0.5"></i>
               <div>
-                <div class="font-medium text-sm text-gray-800">公開直前にデプロイがブロックされた</div>
-                <div class="text-xs text-gray-600 mt-1">コードを保存した際のメールアドレスと、GitHubアカウントのメールアドレスが一致せず、Vercelに公開を止められた。設定を実際のアカウントに合わせて解決した</div>
+                <div class="font-medium text-sm text-gray-800">公開の直前で、公開作業が止められた</div>
+                <div class="text-xs text-gray-600 mt-1">コードを保存した際に使ったメールアドレスと、GitHubアカウントのメールアドレスが一致せず、Vercelから安全のため公開を止められた。アカウントの設定を合わせることで解決した</div>
               </div>
             </li>
             <li class="flex items-start gap-3">
               <i data-lucide="alert-circle" class="w-5 h-5 text-slate-400 flex-shrink-0 mt-0.5"></i>
               <div>
-                <div class="font-medium text-sm text-gray-800">環境変数の名前ズレに気づきにくい</div>
-                <div class="text-xs text-gray-600 mt-1">データベース連携時に変数名を自由に変えられる設定があり、コードが読み込む名前とズレるとエラーにすら出ずに接続できない状態になりかねなかった。作成時に名前を指定して統一した</div>
+                <div class="font-medium text-sm text-gray-800">設定情報の名前のズレに、気づきにくい</div>
+                <div class="text-xs text-gray-600 mt-1">データベースと連携する際、保存する情報の名前を自由に決められる仕組みになっており、コード側が読み込む名前とズレると、エラーすら出ないまま「つながらない」状態になりかねなかった。作成時に名前を指定してそろえることで解決した</div>
               </div>
             </li>
           </ul>
