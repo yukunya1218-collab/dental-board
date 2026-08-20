@@ -94,8 +94,39 @@ export interface ClassifyOutcome {
  * Gemini を fetch で直接叩く。SDKは入れない。
  * 失敗しても例外は投げず error を返す（メッセージ自体を失わないため）。
  */
+async function generateContent(model: string, apiKey: string, prompt: string): Promise<Response> {
+  const body = JSON.stringify({
+    contents: [{ role: "user", parts: [{ text: prompt }] }],
+    generationConfig: {
+      temperature: 0.1,
+      responseMimeType: "application/json",
+    },
+  });
+
+  // 新しい AQ. キーはヘッダ、古い AIza キーはクエリ、どちらでも動くように両方試す。
+  // 同時に付けると「認証情報が二重」になることがあるので、片方ずつ。
+  const url = `${API_BASE}/${model}:generateContent`;
+  const headerRes = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-goog-api-key": apiKey,
+    },
+    body,
+  });
+  if (headerRes.ok) return headerRes;
+
+  const queryRes = await fetch(`${url}?key=${encodeURIComponent(apiKey)}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body,
+  });
+  if (queryRes.ok) return queryRes;
+  return headerRes;
+}
+
 export async function classifyWithGemini(prompt: string): Promise<ClassifyOutcome> {
-  const apiKey = process.env.GEMINI_API_KEY;
+  const apiKey = process.env.GEMINI_API_KEY?.trim();
   if (!apiKey) {
     return { classification: null, model: null, error: "GEMINI_API_KEY が未設定です" };
   }
@@ -103,20 +134,7 @@ export async function classifyWithGemini(prompt: string): Promise<ClassifyOutcom
   let lastError = "原因不明";
   for (const model of modelCandidates()) {
     try {
-      const res = await fetch(`${API_BASE}/${model}:generateContent`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-goog-api-key": apiKey,
-        },
-        body: JSON.stringify({
-          contents: [{ role: "user", parts: [{ text: prompt }] }],
-          generationConfig: {
-            temperature: 0.1,
-            responseMimeType: "application/json",
-          },
-        }),
-      });
+      const res = await generateContent(model, apiKey, prompt);
 
       if (!res.ok) {
         const detail = (await res.text()).slice(0, 300);
