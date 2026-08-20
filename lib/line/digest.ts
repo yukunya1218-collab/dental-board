@@ -6,43 +6,92 @@ import type { LineRequestView } from "@/lib/line/types";
 
 const SEPARATOR = "━━━━━━━━━━━━━━━";
 
-function oneLine(body: string, max = 60): string {
+/** LINEの狭い画面向け。句読点優先で折り返し、1行を短く保つ */
+function wrapBody(body: string, maxChars = 18): string[] {
   const flat = body.replace(/\s+/g, " ").trim();
-  return flat.length > max ? `${flat.slice(0, max)}…` : flat;
+  if (!flat) return ["（内容なし）"];
+
+  const chunks: string[] = [];
+  let rest = flat;
+
+  while (rest.length > maxChars) {
+    const window = rest.slice(0, maxChars + 1);
+    const breakAt = Math.max(
+      window.lastIndexOf("、"),
+      window.lastIndexOf("。"),
+      window.lastIndexOf("！"),
+      window.lastIndexOf("？"),
+      window.lastIndexOf("・"),
+      window.lastIndexOf(" "),
+      window.lastIndexOf("　")
+    );
+    const cut = breakAt >= Math.floor(maxChars * 0.4) ? breakAt + 1 : maxChars;
+    chunks.push(rest.slice(0, cut).trimEnd());
+    rest = rest.slice(cut).trimStart();
+  }
+  if (rest) chunks.push(rest);
+  return chunks;
 }
 
-function mark(item: LineRequestView): string {
-  if (item.overdue && item.deadline) return `⚠ 期限切れ(${formatJstMonthDay(new Date(item.deadline))}) `;
-  if (item.stalled) return `⚠ ${item.stalledDays}日動きなし `;
-  return "";
+function alertLine(item: LineRequestView): string | null {
+  if (item.overdue && item.deadline) {
+    return `⚠ 期限切れ（${formatJstMonthDay(new Date(item.deadline))}）`;
+  }
+  if (item.stalled) {
+    return `⚠ ${item.stalledDays}日動きなし`;
+  }
+  return null;
 }
 
-function detailLine(item: LineRequestView): string {
-  const deadline = item.deadline ? `期限 ${formatJstMonthDay(new Date(item.deadline))}` : "期限なし";
-  return `   ${STATUS_LABELS[item.status]} / ${deadline} / ${item.requester}`;
-}
-
-/** スマホで読める体裁に。何もないときも「Botは生きている」と分かる1行を返す。 */
+/** スマホで一目で拾える体裁。1件ごとに空行を入れ、情報は1行1つにする。 */
 export function formatDigest(items: LineRequestView[], now: Date): string {
   const stamp = formatJstDateTime(now);
 
   if (items.length === 0) {
-    return [`✅ 未完了の依頼はありません。（${stamp}）`, "今日はおつかれさまでした。"].join("\n");
+    return [
+      "✅ 未完了の依頼はありません",
+      `（${stamp}）`,
+      "",
+      "今日はおつかれさまでした。",
+    ].join("\n");
   }
 
-  const stalledCount = items.filter((i) => i.stalled).length;
-  const lines = [`📋 未完了の依頼 ${items.length}件（${stamp}）`, SEPARATOR];
+  const stalledCount = items.filter((i) => i.stalled || i.overdue).length;
+  const lines: string[] = [
+    `📋 未完了の依頼 ${items.length}件`,
+    `（${stamp}）`,
+    SEPARATOR,
+  ];
 
   items.forEach((item, index) => {
-    lines.push(`${index + 1}. ${mark(item)}${oneLine(item.body)}`);
-    lines.push(detailLine(item));
+    lines.push("");
+    lines.push(`【${index + 1}】`);
+
+    const alert = alertLine(item);
+    if (alert) lines.push(alert);
+
+    for (const chunk of wrapBody(item.body)) {
+      lines.push(chunk);
+    }
+
+    lines.push("");
+    lines.push(`状態：${STATUS_LABELS[item.status]}`);
+    lines.push(
+      item.deadline
+        ? `期限：${formatJstMonthDay(new Date(item.deadline))}`
+        : "期限：なし"
+    );
+    lines.push(`依頼：${item.requester}`);
   });
 
+  lines.push("");
   lines.push(SEPARATOR);
   if (stalledCount > 0) {
-    lines.push(`⚠ のついた ${stalledCount}件 は止まっています。`);
+    lines.push(`⚠ がついた ${stalledCount}件 は止まっています`);
+    lines.push("");
   }
-  lines.push("終わったものはこのトークで「◯◯終わった」と返信してください。");
+  lines.push("終わったものは");
+  lines.push("「◯◯終わった」と返信してください");
 
   return lines.join("\n");
 }
