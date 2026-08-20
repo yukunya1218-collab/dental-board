@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -9,6 +10,7 @@ import {
   Wrench,
   Users,
   MessageCircle,
+  MessageSquare,
   GitBranch,
   Package,
   LayoutGrid,
@@ -85,6 +87,13 @@ export function NavPane({
             </span>
           </div>
         )}
+        <Link
+          href="/line"
+          className="mt-3 flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-600 hover:bg-slate-50 transition-colors"
+        >
+          <MessageSquare className="w-4 h-4 shrink-0" />
+          経営連絡ボード
+        </Link>
       </div>
 
       <ScrollArea className="flex-1">

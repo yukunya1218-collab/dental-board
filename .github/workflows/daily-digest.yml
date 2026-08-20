@@ -1,0 +1,29 @@
+name: 経営連絡ボード 日次リマインド
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 毎日 21:30 JST = 12:30 UTC。cron は常に UTC で解釈される。
+    # Vercel Cron を使わないのは、無料プランでは発火時刻が最大1時間ほどずれることがあり、
+    # 21:30 の投稿が 22:30 になってしまうため。
+    # なお GitHub の定期実行も混雑時は数分〜十数分遅れることがある（手動実行なら即時）。
+    - cron: '30 12 * * *'
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 未完了の依頼をLINEに投稿する
+        env:
+          DIGEST_URL: ${{ vars.DIGEST_URL || 'https://dental-board-five.vercel.app/api/digest' }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          if [ -z "$CRON_SECRET" ]; then
+            echo "::error::CRON_SECRET が GitHub Secrets に登録されていません"
+            exit 1
+          fi
+          # --fail-with-body: 2xx以外ならジョブを失敗させつつ、応答本文も表示する
+          curl -sS --fail-with-body \
+            -X POST "$DIGEST_URL" \
+            -H "x-cron-secret: $CRON_SECRET" \
+            -H "Content-Type: application/json"

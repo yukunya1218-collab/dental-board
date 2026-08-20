@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import { NavPane } from "@/components/NavPane";
 import { ProblemList } from "@/components/ProblemList";
 import { ProblemDetail } from "@/components/ProblemDetail";
@@ -219,6 +220,12 @@ export default function Home() {
           >
             詳細・対応
           </button>
+          <Link
+            href="/line"
+            className="shrink-0 flex items-center px-4 py-3 text-sm font-medium text-slate-500"
+          >
+            経営連絡
+          </Link>
         </div>
 
         {/* Mobile: List view */}
