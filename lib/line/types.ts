@@ -8,15 +8,15 @@ export const REQUEST_STATUSES: RequestStatus[] = ["依頼済", "受領", "完了
 
 /** 画面・LINE投稿用の短い表示名（DBの status 値は変えない） */
 export const STATUS_LABELS: Record<RequestStatus, string> = {
-  "依頼済": "返事待ち",
-  "受領": "やると言った",
+  "依頼済": "未読",
+  "受領": "既読",
   "完了": "終わった",
 };
 
 /** バッジの下に出す、もう一段平易な説明 */
 export const STATUS_HINTS: Record<RequestStatus, string> = {
   "依頼済": "院長からまだ返事がない",
-  "受領": "了解は来た。終わったかは不明",
+  "受領": "了解など返事は来た。終わったかは不明",
   "完了": "終わったと報告あり",
 };
 

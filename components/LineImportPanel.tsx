@@ -22,7 +22,7 @@ interface ImportResponse {
 
 const ACTION_LABELS: Record<string, string> = {
   "依頼を登録": "依頼を登録",
-  "受領に更新": "「やると言った」に更新",
+  "受領に更新": "「既読」に更新",
   "完了に更新": "「終わった」に更新",
   "変更なし": "変更なし",
   "重複スキップ": "重複スキップ",
