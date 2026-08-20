@@ -30,7 +30,7 @@ const COLUMN_COMMENTS: [string, string][] = [
   ["app_settings.value", "設定値。グループIDは最初のグループイベントから実行時に保存する"],
 ];
 
-export async function POST() {
+async function createTables() {
   try {
     await sql`
       CREATE TABLE IF NOT EXISTS line_requests (
@@ -96,7 +96,16 @@ export async function POST() {
 
     return NextResponse.json({ message: "経営連絡ボードのテーブルを作成しました。" });
   } catch (err) {
-    console.error("[POST /api/line/seed]", err);
+    console.error("[/api/line/seed]", err);
     return NextResponse.json({ error: String(err) }, { status: 500 });
   }
+}
+
+// ブラウザのアドレス欄から開いても動くように GET でも同じ処理をする
+export async function GET() {
+  return createTables();
+}
+
+export async function POST() {
+  return createTables();
 }
