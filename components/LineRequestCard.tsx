@@ -4,18 +4,12 @@ import { AlertTriangle, Check, Clock, Sparkles, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { jstDateKey } from "@/lib/line/time";
-import { REQUEST_STATUSES, type LineRequestView, type RequestStatus } from "@/lib/line/types";
+import { REQUEST_STATUSES, STATUS_HINTS, STATUS_LABELS, type LineRequestView, type RequestStatus } from "@/lib/line/types";
 
 const STATUS_STYLES: Record<RequestStatus, string> = {
-  "依頼済": "bg-red-100 text-red-700 border-red-200",
-  "受領": "bg-yellow-100 text-yellow-700 border-yellow-200",
-  "完了": "bg-slate-100 text-slate-500 border-slate-200",
-};
-
-const STATUS_HINTS: Record<RequestStatus, string> = {
-  "依頼済": "まだ反応がありません",
-  "受領": "返事はあったが完了報告なし",
-  "完了": "完了",
+  "依頼済": "bg-red-100 text-red-800 border-red-300",
+  "受領": "bg-amber-100 text-amber-900 border-amber-300",
+  "完了": "bg-emerald-50 text-emerald-800 border-emerald-200",
 };
 
 interface LineRequestCardProps {
@@ -53,7 +47,7 @@ export function LineRequestCard({
             STATUS_STYLES[request.status]
           )}
         >
-          {request.status}
+          {STATUS_LABELS[request.status]}
         </span>
         {request.stalled && !inactive && (
           <span className="flex items-center gap-1 text-sm px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300 font-semibold">
@@ -115,7 +109,7 @@ export function LineRequestCard({
         >
           {REQUEST_STATUSES.map((s) => (
             <option key={s} value={s}>
-              {s}
+              {STATUS_LABELS[s]}
             </option>
           ))}
         </select>
@@ -130,7 +124,7 @@ export function LineRequestCard({
             className="bg-slate-700 hover:bg-slate-800 text-white"
           >
             <Check className="w-4 h-4 mr-1" />
-            完了にする
+            終わったにする
           </Button>
         )}
         <Button

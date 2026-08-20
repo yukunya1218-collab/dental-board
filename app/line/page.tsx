@@ -139,7 +139,7 @@ export default function LineBoardPage() {
               onClick={() => setShowClosed((v) => !v)}
               className="text-sm font-medium text-slate-600"
             >
-              {showClosed ? "完了・除外したものを隠す" : `完了・除外したものを見る（${closed.length}件）`}
+              {showClosed ? "終わった・除外したものを隠す" : `終わった・除外したものを見る（${closed.length}件）`}
             </button>
             {showClosed &&
               closed.map((request) => (

@@ -1,6 +1,7 @@
 import sql from "@/lib/db";
 import type { PushOutcome } from "@/lib/line/messaging";
 import { formatJstDateTime, formatJstMonthDay } from "@/lib/line/time";
+import { STATUS_LABELS } from "@/lib/line/types";
 import type { LineRequestView } from "@/lib/line/types";
 
 const SEPARATOR = "━━━━━━━━━━━━━━━";
@@ -18,7 +19,7 @@ function mark(item: LineRequestView): string {
 
 function detailLine(item: LineRequestView): string {
   const deadline = item.deadline ? `期限 ${formatJstMonthDay(new Date(item.deadline))}` : "期限なし";
-  return `   ${item.status} / ${deadline} / ${item.requester}`;
+  return `   ${STATUS_LABELS[item.status]} / ${deadline} / ${item.requester}`;
 }
 
 /** スマホで読める体裁に。何もないときも「Botは生きている」と分かる1行を返す。 */

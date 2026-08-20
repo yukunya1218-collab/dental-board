@@ -1,4 +1,5 @@
 import type { OpenRequestSummary, RoleName } from "@/lib/line/types";
+import { STATUS_LABELS } from "@/lib/line/types";
 import { jstDateKey, jstTodayLabel } from "@/lib/line/time";
 
 // ここはロジックを含まないプロンプト置き場です。
@@ -92,7 +93,7 @@ function renderOpenRequests(openRequests: OpenRequestSummary[]): string {
   return openRequests
     .map((r) => {
       const deadline = r.deadline ? jstDateKey(new Date(r.deadline)) : "期限なし";
-      return `- ID: ${r.shortId} / 状態: ${r.status} / 期限: ${deadline} / 内容: ${r.body.replace(/\s+/g, " ").slice(0, 120)}`;
+      return `- ID: ${r.shortId} / 状態: ${STATUS_LABELS[r.status]} / 期限: ${deadline} / 内容: ${r.body.replace(/\s+/g, " ").slice(0, 120)}`;
     })
     .join("\n");
 }

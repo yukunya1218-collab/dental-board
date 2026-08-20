@@ -6,6 +6,20 @@ export type Verdict = "依頼" | "完了報告" | "受領" | "無関係";
 
 export const REQUEST_STATUSES: RequestStatus[] = ["依頼済", "受領", "完了"];
 
+/** 画面・LINE投稿用の短い表示名（DBの status 値は変えない） */
+export const STATUS_LABELS: Record<RequestStatus, string> = {
+  "依頼済": "返事待ち",
+  "受領": "やると言った",
+  "完了": "終わった",
+};
+
+/** バッジの下に出す、もう一段平易な説明 */
+export const STATUS_HINTS: Record<RequestStatus, string> = {
+  "依頼済": "院長からまだ返事がない",
+  "受領": "了解は来た。終わったかは不明",
+  "完了": "終わったと報告あり",
+};
+
 export const VERDICTS: Verdict[] = ["依頼", "完了報告", "受領", "無関係"];
 
 /** AI分類に失敗したメッセージに立てる印 */

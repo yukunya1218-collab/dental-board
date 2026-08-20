@@ -20,6 +20,15 @@ interface ImportResponse {
   error?: string;
 }
 
+const ACTION_LABELS: Record<string, string> = {
+  "依頼を登録": "依頼を登録",
+  "受領に更新": "「やると言った」に更新",
+  "完了に更新": "「終わった」に更新",
+  "変更なし": "変更なし",
+  "重複スキップ": "重複スキップ",
+  "分類できず": "分類できず",
+};
+
 const ACTION_STYLES: Record<string, string> = {
   "依頼を登録": "bg-red-100 text-red-700 border-red-200",
   "受領に更新": "bg-yellow-100 text-yellow-700 border-yellow-200",
@@ -149,7 +158,7 @@ export function LineImportPanel({ onImported }: LineImportPanelProps) {
                           ACTION_STYLES[r.action] ?? "bg-slate-100 text-slate-500 border-slate-200"
                         )}
                       >
-                        {r.action}
+                        {ACTION_LABELS[r.action] ?? r.action}
                       </span>
                       <span className="text-xs text-slate-500">AI判定: {r.verdict}</span>
                       {r.confidence !== null && (
