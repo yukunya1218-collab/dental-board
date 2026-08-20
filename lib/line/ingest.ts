@@ -82,18 +82,21 @@ async function moveStatus(id: string, status: "受領" | "完了", at: Date): Pr
 }
 
 /**
- * 完了報告に対象IDが付いていないときは推測しない（誤って完了にすると日次投稿から消えてしまう）。
- * 例外は開いている依頼が1件だけのとき。受領は日次投稿から消えないので新しい依頼済に寄せる。
+ * AIが対象IDを返さないときの推測。
+ * LINEは時系列なので、直前の依頼を指していることが多い。
+ * 完了報告は誤って消すと元の問題に戻るので、いちばん新しい未完了を選ぶ。
  */
 function fallbackTarget(
   classification: Classification,
   openRequests: OpenRequestSummary[]
 ): OpenRequestSummary | null {
+  if (openRequests.length === 0) return null;
+
   if (classification.verdict === "受領") {
     return openRequests.find((r) => r.status === "依頼済") ?? null;
   }
   if (classification.verdict === "完了報告") {
-    return openRequests.length === 1 ? openRequests[0] : null;
+    return openRequests[0] ?? null;
   }
   return null;
 }

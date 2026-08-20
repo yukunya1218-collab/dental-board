@@ -155,7 +155,7 @@ export default function LineBoardPage() {
           </section>
         )}
 
-        <LineDigestPanel logs={data?.digestLogs ?? []} preview={data?.digestPreview ?? ""} />
+        <LineDigestPanel logs={data?.digestLogs ?? []} preview={data?.digestPreview ?? ""} onDigestSent={fetchBoard} />
 
         <LineImportPanel onImported={fetchBoard} />
 

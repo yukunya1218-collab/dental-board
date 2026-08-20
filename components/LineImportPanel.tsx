@@ -8,10 +8,10 @@ import type { IngestResult, PasteLineReport } from "@/lib/line/types";
 
 const SECRET_STORAGE_KEY = "line-board-secret";
 
-const PLACEHOLDER = `山本: 明日の朝までに業者に電話しておいて
-高橋: 了解
-山本: レセプトの確認もお願い
-高橋: 電話しておいた`;
+const PLACEHOLDER = `副院長: 来週の面談資料、金曜までにお願い
+院長: 了解
+副院長: 保険の更新書類、今週中に提出して
+院長: 送っておいた`;
 
 interface ImportResponse {
   parsedCount?: number;
@@ -66,6 +66,7 @@ export function LineImportPanel({ onImported }: LineImportPanelProps) {
       }
       setResponse(data);
       onImported();
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
       console.error("会話の取り込みに失敗しました", err);
       setError("通信に失敗しました");
